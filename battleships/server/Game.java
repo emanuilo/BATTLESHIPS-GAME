@@ -24,12 +24,15 @@ public class Game
     private static Game instance;
     ArrayList<Player> players = new ArrayList<>();
     private Server gameServer;
+    
     private String password;
     private int tableSize;
     private ArrayList<Integer> shipsAndSizes=new ArrayList<>();
     private int deployTime;
     private int RoundTime;
     private int maxNumOfPlayers;
+    
+    private State state;
     
     private Game() throws SocketException 
     {
@@ -115,6 +118,14 @@ public class Game
     	int num=in.nextInt();  
     	if (num<2) System.out.println("Minimum number of players is 2!");
     	else maxNumOfPlayers=num;
+    }
+    
+    public void changeState(State st){
+    	state=st;
+    }
+    
+    public State getState(){
+    	return state;
     }
     
     public static void main(String []args)

@@ -38,12 +38,17 @@ public class Player implements Runnable
             while( ! Thread.interrupted() )
             {
                 String msg = playerProxy.receive();
+                //obradi poruku
                 System.out.println(msg);
                 
             }
         } catch(InterruptedException e) { }
     }
-
+    
+    private void messageProcessing(String msg){
+    	
+    }
+    
     public void reportMessage(String message)
     {
         try 

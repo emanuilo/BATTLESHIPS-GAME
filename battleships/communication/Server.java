@@ -57,14 +57,12 @@ public class Server extends SocketCommunicator implements Runnable
             pp.send(CommunicationCommands.WELCOME_MESSAGE + " " + clientID );
             System.out.println("Added new player: " + parts[1]);
         }
-        else
-        {
-        	if (parts[0].equals(CommunicationCommands.QUIT_MESSAGE)){
-        		int id=Integer.parseInt(parts[1]);
-        		PlayerProxy pp=connectedPlayers.get(id);
-        		if (pp==null) ;//throw izuzetak;
-        		pp.receivedMessage(" ");
-        	}
+        else if (parts[0].equals(CommunicationCommands.QUIT_MESSAGE)){
+    		int id=Integer.parseInt(parts[1]);
+    		PlayerProxy pp=connectedPlayers.get(id);
+    		if (pp==null) ;//throw izuzetak;
+    		pp.receivedMessage(" ");
+        	
             // ako je serveru stigla neka druga poruka
             // treba razloziti poruku, utvrditi da li je validna, od kog igraca je potekla (id)
             // i onda treba proslediti odgovarajucem igracu putem njegovog playerProxy objekta.
@@ -75,6 +73,9 @@ public class Server extends SocketCommunicator implements Runnable
             // pp.receivedMessage( rest_of_the_message );
 
             System.out.println("Server received: " + message);
+        }
+        else if (game.getState()!=null){
+        	game.getState().behavior(message);
         }
     }
 }
