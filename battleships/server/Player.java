@@ -22,6 +22,7 @@ public class Player implements Runnable
     private Table table;
     private final PlayerProxy playerProxy;
     private Game  myGame;
+    private boolean confirmed=false;
     
     public Player(PlayerProxy _playerProxy, String _name, Game game)
     {
@@ -38,15 +39,15 @@ public class Player implements Runnable
             while( ! Thread.interrupted() )
             {
                 String msg = playerProxy.receive();
-                //obradi poruku
-                System.out.println(msg);
+                myGame.getState().behavior(msg, this);
+                
                 
             }
         } catch(InterruptedException e) { }
     }
     
-    private void messageProcessing(String msg){
-    	
+    public void setConfirmed(){
+    	confirmed=true;
     }
     
     public void reportMessage(String message)

@@ -12,13 +12,15 @@ public class BattleOverseer extends Thread {
 		
 		try{
 			while(!interrupted()){
-				myGame.changeState(new DeployState());
+				myGame.changeState(new DeployState(myGame));
+				//if everybody replied then
+				myGame.deployshipsInformation();
 				sleep(30000);
 				
 				while(true){
-					myGame.changeState(new RoundState());
+					myGame.changeState(new RoundState(myGame));
 					sleep(60000);
-					myGame.changeState(new UpdateState());
+					myGame.changeState(new UpdateState(myGame));
 				}
 			}
 		}catch(InterruptedException e){}

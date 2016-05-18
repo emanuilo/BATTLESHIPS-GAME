@@ -1,7 +1,12 @@
 package battleships.server;
 
 public class RoundState extends State {
-	public void behavior(String str){
+	
+	public RoundState(Game game){
+		super(game);
+	}
+	
+	public void behavior(String str, Player player){
 			
 		}
 }

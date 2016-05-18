@@ -87,16 +87,16 @@ public class Game
     }
     
     public void addShipsSizes(){
-    	System.out.println("Number and size of ships: (<number> <size>)");
+    	System.out.println("Number and size of ships: (<size> <number>)");
     	Scanner in=new Scanner(System.in);
     	
     	while(true){
-    		Integer number=new Integer(in.nextInt());
-    		if (number.intValue()==0) break;
-    		shipsAndSizes.add(number);
-    		
     		Integer size=new Integer(in.nextInt());
+    		if (size.intValue()==0) break;
     		shipsAndSizes.add(size);
+    		
+    		Integer number=new Integer(in.nextInt());
+    		shipsAndSizes.add(number);
     	}
     }
     
@@ -126,6 +126,21 @@ public class Game
     
     public State getState(){
     	return state;
+    }
+    
+    public void deployshipsInformation(){
+    	StringBuilder sb=new StringBuilder();
+    	sb.append("D=").append(tableSize).append("; ");
+    	
+    	for (int i=0;(i-1)<shipsAndSizes.size();i++){
+    		sb.append("S(")
+    		.append(shipsAndSizes.get(i))
+    		.append(")=")
+    		.append(shipsAndSizes.get(i+1))
+    		.append("; ");
+    	}
+    	
+    	sendMessageToAllPlayers(sb.toString());
     }
     
     public static void main(String []args)

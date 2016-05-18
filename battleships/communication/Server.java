@@ -46,18 +46,18 @@ public class Server extends SocketCommunicator implements Runnable
     
     private void processMessage(String message) throws IOException
     {
-        String []parts = message.trim().split(" ");
-        if( parts[0].equals( CommunicationCommands.JOIN_MESSAGE ) )
-            // ako je serveru stigla poruka JOIN
-        {
-            PlayerProxy pp = new PlayerProxy(this, receivePacket.getAddress(), receivePacket.getPort());
-            clientID++;
-            connectedPlayers.put(clientID, pp);
-            game.newPlayer(pp, parts[1]);
-            pp.send(CommunicationCommands.WELCOME_MESSAGE + " " + clientID );
-            System.out.println("Added new player: " + parts[1]);
-        }
-        else if (parts[0].equals(CommunicationCommands.QUIT_MESSAGE)){
+    	String []parts = message.trim().split(" ");
+    	if( parts[0].equals( CommunicationCommands.JOIN_MESSAGE ) )
+    		// ako je serveru stigla poruka JOIN
+    	{
+    		PlayerProxy pp = new PlayerProxy(this, receivePacket.getAddress(), receivePacket.getPort());
+    		clientID++;
+    		connectedPlayers.put(clientID, pp);
+    		game.newPlayer(pp, parts[1]);
+    		pp.send(CommunicationCommands.WELCOME_MESSAGE + " " + clientID );
+    		System.out.println("Added new player: " + parts[1]);
+    	}
+    	else if (parts[0].equals(CommunicationCommands.QUIT_MESSAGE)){
     		int id=Integer.parseInt(parts[1]);
     		PlayerProxy pp=connectedPlayers.get(id);
     		if (pp==null) ;//throw izuzetak;
@@ -75,7 +75,10 @@ public class Server extends SocketCommunicator implements Runnable
             System.out.println("Server received: " + message);
         }
         else if (game.getState()!=null){
-        	game.getState().behavior(message);
+        	int id=Integer.parseInt(parts[1]);
+        	PlayerProxy pp=connectedPlayers.get(id);
+        	if (pp==null) ;//throw izuzetak;
+        	pp.receivedMessage(message);
         }
     }
 }
