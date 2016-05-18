@@ -31,6 +31,7 @@ public class Game
     private int deployTime;
     private int RoundTime;
     private int maxNumOfPlayers;
+    private int numberOfConfirmed;
     
     private State state;
     
@@ -86,6 +87,10 @@ public class Game
     	tableSize=in.nextInt();
     }
     
+    public int getTableSize(){
+    	return tableSize;
+    }
+    
     public void addShipsSizes(){
     	System.out.println("Number and size of ships: (<size> <number>)");
     	Scanner in=new Scanner(System.in);
@@ -128,19 +133,47 @@ public class Game
     	return state;
     }
     
-    public void deployshipsInformation(){
+    public int getDeployTime(){
+    	return deployTime;
+    }
+    
+    public String getShipSizesString(){
     	StringBuilder sb=new StringBuilder();
-    	sb.append("D=").append(tableSize).append("; ");
-    	
     	for (int i=0;(i-1)<shipsAndSizes.size();i++){
     		sb.append("S(")
     		.append(shipsAndSizes.get(i))
     		.append(")=")
     		.append(shipsAndSizes.get(i+1))
-    		.append("; ");
+    		.append(";");
     	}
+    	return sb.toString();
+    }
+    
+    public void deployShipsInformation(){
+    	StringBuilder sb=new StringBuilder();
+    	sb.append("D=").append(tableSize).append(";");
     	
+    	sb.append(getShipSizesString());
+    	 	
     	sendMessageToAllPlayers(sb.toString());
+    }
+    
+    public void resendDeployShipsInformation(){
+    	StringBuilder sb=new StringBuilder();
+    	sb.append("D=").append(tableSize).append("; ");
+    	
+    	sb.append(getShipSizesString());
+    	
+    	for (Player p:players){
+    		if (!p.isConfirmed())
+    			p.reportMessage(sb.toString());
+    	}
+    }
+    
+    public void deleteNotConfirmedPl(){
+    	for (Player p:players)
+    		if (!p.isConfirmed())
+    			players.remove(p);
     }
     
     public static void main(String []args)

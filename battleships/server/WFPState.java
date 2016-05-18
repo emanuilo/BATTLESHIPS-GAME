@@ -9,8 +9,10 @@ public class WFPState extends State {
 
 	@Override
 	public void behavior(String s, Player player) {
-		// TODO Auto-generated method stub
-
+		String []parts=s.trim().split(" ");
+		if (parts[0].equals("CONFIRM_DEPLOY")){
+			player.setConfirmed();
+		}
 	}
 
 }

@@ -17,4 +17,5 @@ public class CommunicationCommands
     public static final String QUIT_MESSAGE = "QUIT";
     public static final String QUIT_RESPONSE = "BYE";
     public static final String STATE_REQUEST = "STATE";
+    public static final String LAYOUT_MESSAGE="SHIP_LAYOUT";
 }

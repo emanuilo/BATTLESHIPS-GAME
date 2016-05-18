@@ -50,6 +50,12 @@ public class Player implements Runnable
     	confirmed=true;
     }
     
+    public boolean isConfirmed(){
+    	return confirmed;
+    }
+    
+    
+    
     public void reportMessage(String message)
     {
         try 

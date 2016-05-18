@@ -23,6 +23,9 @@ public class Ship {
 		init=false;
 	}
 	
+	public int getSize(){
+		return parts.length;
+	}
 	public String toString(){
 		if (!init) return "";
 		StringBuilder str= new StringBuilder();
@@ -61,11 +64,14 @@ public class Ship {
 	
 	public static List<Ship> create (String s){
 		List<Ship> l=new ArrayList<Ship>();
-		String []str=s.split("=",2);
-		int a=Integer.parseInt(str[0].replaceAll("[^0-9]", ""));
-		int b=Integer.parseInt(str[1].replaceAll("[^0-9]", ""));
-		for (int i=0;i<b;i++){
-			l.add(new Ship(a));
+		String []parts1=s.split(";");
+		for(String str:parts1){
+			String []parts2=str.split("=",2);
+			int a=Integer.parseInt(parts2[0].replaceAll("[^0-9]", ""));
+			int b=Integer.parseInt(parts2[1].replaceAll("[^0-9]", ""));
+			for (int i=0;i<b;i++){
+				l.add(new Ship(a));
+			}
 		}
 		return l;
 	}
