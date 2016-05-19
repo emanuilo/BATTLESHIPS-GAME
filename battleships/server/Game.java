@@ -29,7 +29,7 @@ public class Game
     private int tableSize;
     private ArrayList<Integer> shipsAndSizes=new ArrayList<>();
     private int deployTime;
-    private int RoundTime;
+    private int roundTime;
     private int maxNumOfPlayers;
     private int numberOfConfirmed;
     
@@ -114,7 +114,7 @@ public class Game
     public void addRoundTime(){
     	System.out.println("Round time: ");
     	Scanner in=new Scanner(System.in);
-    	RoundTime=in.nextInt();  
+    	roundTime=in.nextInt();  
     }
     
     public void addNumberOfPlayers(){
@@ -135,6 +135,10 @@ public class Game
     
     public int getDeployTime(){
     	return deployTime;
+    }
+    
+    public int getRoundTime(){
+    	return roundTime;
     }
     
     public String getShipSizesString(){

@@ -7,5 +7,5 @@ public abstract class State {
 		myGame=game;
 	}
 	
-	public abstract void behavior(String s, Player player);
+	public abstract String behavior(String s, Player player);
 }

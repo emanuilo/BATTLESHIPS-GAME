@@ -6,7 +6,8 @@ public class RoundState extends State {
 		super(game);
 	}
 	
-	public void behavior(String str, Player player){
-			
-		}
+	public String behavior(String str, Player player){
+		return str;
+
+	}
 }

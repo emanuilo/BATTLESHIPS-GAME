@@ -8,11 +8,12 @@ public class WFPState extends State {
 	}
 
 	@Override
-	public void behavior(String s, Player player) {
+	public String behavior(String s, Player player) {
 		String []parts=s.trim().split(" ");
 		if (parts[0].equals("CONFIRM_DEPLOY")){
 			player.setConfirmed();
 		}
+		return s;
 	}
 
 }

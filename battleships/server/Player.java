@@ -54,7 +54,14 @@ public class Player implements Runnable
     	return confirmed;
     }
     
-    
+    public boolean setTable(Table t){
+    	if (table==null){
+    		table=t;
+    		return true;
+    	}
+    	return false;
+    	 
+    }
     
     public void reportMessage(String message)
     {
