@@ -15,6 +15,9 @@ import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
+
 import java.util.Scanner;
 
 /**
@@ -49,6 +52,7 @@ public class Game
          addDeployTime();
          addRoundTime();
          addNumberOfPlayers();
+         state=new WaitingForConfState(this);
          battleOverseer=new BattleOverseer(this);
          //start overseer
     }
@@ -294,11 +298,16 @@ public class Game
     	throw new playerNotFound();
     }
     
+    public int getMaxNumOfPl(){
+    	return maxNumOfPlayers;
+    }
+    
     public static void main(String []args)
     {
         try 
         {
             Game game=Game.instance();
+            while(game.players.size()<game.maxNumOfPlayers);
             game.startTheGame();
             try {
 				game.battleOverseer.join();

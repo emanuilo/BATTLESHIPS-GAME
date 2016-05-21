@@ -18,16 +18,16 @@ public class BattleOverseer extends Thread {
 		
 		try{
 			while(!interrupted()){
-				myGame.changeState(wfc);
+				myGame.changeState(deploy);
+			
 			
 				myGame.deployShipsInformation();
-				sleep(1000);
+				sleep(500);
 				myGame.resendDeployShipsInformation();
-				sleep(1000);
+				sleep(500);
 				myGame.resendDeployShipsInformation();
 				myGame.deleteNotConfirmedPl();
 				
-				myGame.changeState(deploy);
 				startTime=System.currentTimeMillis();
 				sleep(myGame.getDeployTime());
 				

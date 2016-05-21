@@ -19,9 +19,9 @@ public class WaitingForConfState extends State {
 		else if(parts[0].equals(CommunicationCommands.STATE_REQUEST)){
 			StringBuilder sb=new StringBuilder();
 			sb.append("WFP ")
-			.append(myGame.getNumOfConfirmed())
+			.append(myGame.players.size())
 			.append("/")
-			.append(myGame.players.size());
+			.append(myGame.getMaxNumOfPl());
 			return sb.toString();
 		}
 		else if (parts[0].equals(CommunicationCommands.LAYOUT_MESSAGE))
