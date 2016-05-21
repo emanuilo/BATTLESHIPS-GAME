@@ -71,6 +71,14 @@ public class Game
 		players.remove(playa);
 	}
     
+    public void startTheGame(){
+    	battleOverseer.start();
+    }
+
+    public void stopTheGame(){
+    	battleOverseer.interrupt();
+    }
+    
     public void sendMessageToAllPlayers(String message)
     {
         for(Player p : players)
@@ -98,8 +106,8 @@ public class Game
 		return roundCounter;
 	}
     
-    public int getRemainingTime(){
-    	return battleOverseer.getRemainingTime();
+    public long getElapsedTime(){
+    	return battleOverseer.getElapsedTime();
     }
     
     public void addTableSize(){
@@ -290,7 +298,12 @@ public class Game
     {
         try 
         {
-            Game.instance();
+            Game game=Game.instance();
+            game.startTheGame();
+            try {
+				game.battleOverseer.join();
+			} catch (InterruptedException e) {}
+            
         }
         catch (SocketException ex) 
         {

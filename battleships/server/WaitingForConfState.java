@@ -2,9 +2,9 @@ package battleships.server;
 
 import battleships.communication.CommunicationCommands;
 
-public class WFPState extends State {
+public class WaitingForConfState extends State {
 
-	public WFPState(Game game) {
+	public WaitingForConfState(Game game) {
 		super(game);
 		// TODO Auto-generated constructor stub
 	}

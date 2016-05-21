@@ -15,7 +15,7 @@ public class RoundState extends State {
 	public String behavior(String str, Player player){
 		String []parts=str.trim().split(" ");
 		if (parts[0].equals(CommunicationCommands.STATE_REQUEST))
-			return "R "+myGame.getRoundCounter()+" "+myGame.getRemainingTime();
+			return "R "+(myGame.getRoundTime()-myGame.getElapsedTime());
 		else if (parts[0].equals(CommunicationCommands.LAYOUT_MESSAGE))
 				return CommunicationCommands.LAYOUT_REJECTED;
 		else if (parts.length!=3 || !parts[0].equals(CommunicationCommands.FIRE))
