@@ -4,7 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import battleships.Errors.*;
 
-import battleships.client.BattleshipsPlayer;
+
 
 public class Coordinate {
     private int row;
@@ -37,7 +37,7 @@ public class Coordinate {
     		return new Coordinate(Integer.parseInt(_row), Integer.parseInt(_column));
     	}
     	catch(NumberFormatException | IndexOutOfBoundsException | err_coord_len ex){
-    		Logger.getLogger(BattleshipsPlayer.class.getName()).log(Level.SEVERE, null, ex);
+    		//Logger.getLogger(BattleshipsPlayer.class.getName()).log(Level.SEVERE, null, ex);
     		return null;
     	}
     }

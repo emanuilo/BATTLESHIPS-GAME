@@ -19,8 +19,14 @@ public class DeployState extends State {
 	@Override
 	public String behavior(String str, Player player){
 		String []parts=str.trim().split(" ");
-		if(parts[0].equals(CommunicationCommands.STATE_REQUEST))
-			return "DS "+(myGame.getDeployTime()-myGame.getElapsedTime());
+		if (parts[0].equals("CONFIRM_DEPLOY")){
+			player.setConfirmed();
+			return null;
+		}
+		else if(parts[0].equals(CommunicationCommands.STATE_REQUEST)){
+			System.out.println("DS "+(myGame.getDeployTime()-myGame.getElapsedTime())/1000);
+			return "DS "+(myGame.getDeployTime()-myGame.getElapsedTime())/1000;
+		}
 		else if (parts.length!=3 || !parts[0].equals(CommunicationCommands.LAYOUT_MESSAGE))
 			return "ERROR "+str;
 		Table table=making_and_placing(parts[2]);
@@ -46,11 +52,11 @@ public class DeployState extends State {
 		for(String singleShip:parts){ 					//postavljanje brodova na zadate koordinate
 			correctLayout=false;
 			String []parts2=singleShip.split("=");		
-			parts2[0].replaceAll("[^0-9]", "");     	//velicina broda
+			parts2[0]=parts2[0].replaceAll("[^0-9]", "");     	//velicina broda
 			
 			String []coordinates=parts2[1].split(",");  //koordinate segmenata
-			coordinates[0].replaceAll("[^0-9]", "");
-			coordinates[coordinates.length-1].replaceAll("[^0-9]", "");
+			coordinates[0]=coordinates[0].replaceAll("[^0-9]", "");
+			coordinates[coordinates.length-1]=coordinates[coordinates.length-1].replaceAll("[^0-9]", "");
 			
 			if(Integer.parseInt(coordinates[1])-Integer.parseInt(coordinates[0])==1)
 				orientation='H';

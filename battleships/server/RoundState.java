@@ -14,16 +14,18 @@ public class RoundState extends State {
 	
 	public String behavior(String str, Player player){
 		String []parts=str.trim().split(" ");
-		if (parts[0].equals(CommunicationCommands.STATE_REQUEST))
-			return "R "+(myGame.getRoundTime()-myGame.getElapsedTime());
+		if (parts[0].equals(CommunicationCommands.STATE_REQUEST)){
+			System.out.println("R "+myGame.getRoundCounter()+(myGame.getRoundTime()-myGame.getElapsedTime())/1000);
+			return "R "+myGame.getRoundCounter()+(myGame.getRoundTime()-myGame.getElapsedTime())/1000;
+		}
 		else if (parts[0].equals(CommunicationCommands.LAYOUT_MESSAGE))
 				return CommunicationCommands.LAYOUT_REJECTED;
 		else if (parts.length!=3 || !parts[0].equals(CommunicationCommands.FIRE))
 			return "ERROR "+str;
 		
 		String []playersAndCoors=parts[2].split(";");
-		playersAndCoors[0].replaceAll("[","");
-		playersAndCoors[playersAndCoors.length-1].replaceAll("]","");
+		playersAndCoors[0]=playersAndCoors[0].replaceAll("[","");
+		playersAndCoors[playersAndCoors.length-1]=playersAndCoors[playersAndCoors.length-1].replaceAll("]","");
 		if (playersAndCoors.length!=player.numOfActiveSegs())
 			return CommunicationCommands.FIRE_REJECTED;
 		
@@ -55,7 +57,7 @@ public class RoundState extends State {
 			
 		}
 		
-		return str;
+		return null;
 
 	}
 }

@@ -31,11 +31,11 @@ public class Game
     private Server gameServer;
     
     private String password;
-    private int tableSize;
+    private int tableSize=1010;
     private ArrayList<Integer> shipsAndSizes=new ArrayList<>();
-    private int deployTime;
-    private int roundTime;
-    private int maxNumOfPlayers;
+    private int deployTime=30000;
+    private int roundTime=50000;
+    private int maxNumOfPlayers=2;
     private int numberOfConfirmed;
     private int numOfRemainingPl;
     private int roundCounter;
@@ -46,14 +46,14 @@ public class Game
     
     private Game() throws SocketException 
     {
-         gameServer = new Server(this);
-         addTableSize();
+         //addTableSize();
          addShipsSizes();
-         addDeployTime();
+         /*addDeployTime();
          addRoundTime();
-         addNumberOfPlayers();
+         addNumberOfPlayers();*/
          state=new WaitingForConfState(this);
          battleOverseer=new BattleOverseer(this);
+         gameServer = new Server(this);
          //start overseer
     }
     
@@ -77,6 +77,8 @@ public class Game
     
     public void startTheGame(){
     	battleOverseer.start();
+    	int b; 
+    	b=5;
     }
 
     public void stopTheGame(){
@@ -128,14 +130,25 @@ public class Game
     	System.out.println("Number and size of ships: (<size> <number>)");
     	Scanner in=new Scanner(System.in);
     	
-    	while(true){
+    	shipsAndSizes.add(4);
+    	shipsAndSizes.add(1);
+    	
+    	shipsAndSizes.add(3);
+    	shipsAndSizes.add(2);
+    	
+    	shipsAndSizes.add(2);
+    	shipsAndSizes.add(3);
+    	
+    	shipsAndSizes.add(1);
+    	shipsAndSizes.add(3);
+    	/*while(true){
     		Integer size=new Integer(in.nextInt());
     		if (size.intValue()==0) break;
     		shipsAndSizes.add(size);
     		
     		Integer number=new Integer(in.nextInt());
     		shipsAndSizes.add(number);
-    	}
+    	}*/
     }
     
     public void addDeployTime(){
@@ -176,7 +189,7 @@ public class Game
     
     public String getShipSizesString(){
     	StringBuilder sb=new StringBuilder();
-    	for (int i=0;(i-1)<shipsAndSizes.size();i++){
+    	for (int i=0;i<(shipsAndSizes.size()-1);i=i+2){
     		sb.append("S(")
     		.append(shipsAndSizes.get(i))
     		.append(")=")
@@ -197,7 +210,7 @@ public class Game
     
     public void resendDeployShipsInformation(){
     	StringBuilder sb=new StringBuilder();
-    	sb.append("D=").append(tableSize).append("; ");
+    	sb.append("D=").append(tableSize).append(";");
     	
     	sb.append(getShipSizesString());
     	
@@ -282,8 +295,6 @@ public class Game
 					player.reportMessage(CommunicationCommands.GAME_WON+" "+winner.getName());
 			}
     	}
-    		
-    		
     }
     
     public String getPass(){
@@ -307,8 +318,20 @@ public class Game
         try 
         {
             Game game=Game.instance();
-            while(game.players.size()<game.maxNumOfPlayers);
+            System.out.println("kod pre while sam");
+            while(true){
+            	try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {}
+            	if (game.players.size()==game.getMaxNumOfPl())
+            		break;
+            }
+            System.out.println("pre start game");
             game.startTheGame();
+            System.out.println("posle start game");
+            try {
+				Thread.sleep(4000);
+			} catch (InterruptedException e1) {}
             try {
 				game.battleOverseer.join();
 			} catch (InterruptedException e) {}

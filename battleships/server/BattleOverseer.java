@@ -4,23 +4,27 @@ public class BattleOverseer extends Thread {
 	private Game myGame;
 	private int remainingTime;
 	private WaitingForConfState wfc=new WaitingForConfState(myGame);
-	private DeployState deploy=new DeployState(myGame);
-	private RoundState round=new RoundState(myGame);
-	private UpdateState update=new UpdateState(myGame);
+	private DeployState deploy;
+	private RoundState round;
+	private UpdateState update;
 	
 	private long startTime, estimatedTime;
 	
 	public BattleOverseer(Game game) {
 		myGame=game;
+		deploy=new DeployState(myGame);
+		round=new RoundState(myGame);
+		update=new UpdateState(myGame);
 	}
 	@Override
 	public void run() {
 		
 		try{
 			while(!interrupted()){
+				System.out.println("usao u overseer");
 				myGame.changeState(deploy);
 			
-			
+				sleep(500);
 				myGame.deployShipsInformation();
 				sleep(500);
 				myGame.resendDeployShipsInformation();

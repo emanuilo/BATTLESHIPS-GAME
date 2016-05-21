@@ -12,11 +12,8 @@ public class WaitingForConfState extends State {
 	@Override
 	public String behavior(String s, Player player) {
 		String []parts=s.trim().split(" ");
-		if (parts[0].equals("CONFIRM_DEPLOY")){
-			player.setConfirmed();
-			return null;
-		}
-		else if(parts[0].equals(CommunicationCommands.STATE_REQUEST)){
+		
+		if(parts[0].equals(CommunicationCommands.STATE_REQUEST)){
 			StringBuilder sb=new StringBuilder();
 			sb.append("WFP ")
 			.append(myGame.players.size())

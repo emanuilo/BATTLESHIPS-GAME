@@ -41,6 +41,7 @@ public class Server extends SocketCommunicator implements Runnable
                 String message = receive();
                 try {
                 	processMessage(message);
+                	serverThread.yield();
 				} catch (idNotFound e) {
 					System.out.println(e);
 				}
@@ -56,6 +57,8 @@ public class Server extends SocketCommunicator implements Runnable
     	if( parts[0].equals( CommunicationCommands.JOIN_MESSAGE ) )
     		// ako je serveru stigla poruka JOIN
     	{	
+    		System.out.println(message);
+    		
     		String pass=game.getPass();
     		PlayerProxy pp = new PlayerProxy(this, receivePacket.getAddress(), receivePacket.getPort());
     		if (pass!=null && parts.length!=3)
@@ -85,6 +88,7 @@ public class Server extends SocketCommunicator implements Runnable
     		System.out.println("Server received: " + message);
         }
         else if (game.getState()!=null){
+        	System.out.println(message);
         	int id=Integer.parseInt(parts[1]);
         	PlayerProxy pp=connectedPlayers.get(id);
         	if (pp==null)throw new idNotFound();
