@@ -19,8 +19,10 @@ public class DeployState extends State {
 	@Override
 	public String behavior(String str, Player player){
 		String []parts=str.trim().split(" ");
-		if (parts.length>3 || parts[0]!=CommunicationCommands.LAYOUT_MESSAGE)
-			return CommunicationCommands.LAYOUT_REJECTED;
+		if(parts[0].equals(CommunicationCommands.STATE_REQUEST))
+			return "DS "+myGame.getRemainingTime();
+		else if (parts.length!=3 || !parts[0].equals(CommunicationCommands.LAYOUT_MESSAGE))
+			return "ERROR "+str;
 		Table table=making_and_placing(parts[2]);
 		if (table!=null){
 			player.setTable(table);

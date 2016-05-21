@@ -20,4 +20,14 @@ public class CommunicationCommands
     public static final String LAYOUT_MESSAGE="SHIP_LAYOUT";
     public static final String LAYOUT_ACCEPTED="LAYOUT_ACCEPTED";
     public static final String LAYOUT_REJECTED="LAYOUT_REJECTED";
+    public static final String FIRE="FIRE";
+    public static final String FIRE_ACCEPTED="FIRE_ACCEPTED";
+    public static final String FIRE_REJECTED="FIRE_REJECTED";
+    public static final String GAME_OVER="GAME_OVER";
+    public static final String VICTORY="VICTORY";
+    public static final String GAME_WON="GAME_WON";
+    public static final String NO_VICTORY="NO_VICTORY";
+    public static final String ACCESS_DENIED="ACCESS_DENIED";
+    public static final String PASSWORD_REQUIRED="PASSWORD_REQUIRED";
+    public static final String DUPLICATE_NAME="DUPLICATE_NAME";
 }

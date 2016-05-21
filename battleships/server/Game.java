@@ -5,7 +5,9 @@
  */
 package battleships.server;
 
+import battleships.ErrorsServer.playerNotFound;
 import battleships.common.Table;
+import battleships.communication.CommunicationCommands;
 import battleships.communication.PlayerProxy;
 import battleships.communication.Server;
 import java.net.SocketException;
@@ -32,8 +34,12 @@ public class Game
     private int roundTime;
     private int maxNumOfPlayers;
     private int numberOfConfirmed;
+    private int numOfRemainingPl;
+    private int roundCounter;
     
+    private BattleOverseer battleOverseer;
     private State state;
+    ArrayList<String> fireUnion=new ArrayList<>();
     
     private Game() throws SocketException 
     {
@@ -43,6 +49,8 @@ public class Game
          addDeployTime();
          addRoundTime();
          addNumberOfPlayers();
+         battleOverseer=new BattleOverseer(this);
+         //start overseer
     }
     
     public static Game instance() throws SocketException
@@ -55,8 +63,13 @@ public class Game
     public void newPlayer(PlayerProxy pp, String name)
     {
         Player p = new Player(pp, name, this);
-        players.add(p);        
+        players.add(p);
+        numOfRemainingPl++;
     }
+    
+    public void deleteAPlayer(Player playa) {
+		players.remove(playa);
+	}
     
     public void sendMessageToAllPlayers(String message)
     {
@@ -81,8 +94,16 @@ public class Game
     	password=pass;
     }
     
+    public int getRoundCounter() {
+		return roundCounter;
+	}
+    
+    public int getRemainingTime(){
+    	return battleOverseer.getRemainingTime();
+    }
+    
     public void addTableSize(){
-    	System.out.println("Table size: ");
+    	System.out.println("Table size: <xxyy>");
     	Scanner in=new Scanner(System.in);
     	tableSize=in.nextInt();
     }
@@ -178,6 +199,91 @@ public class Game
     	for (Player p:players)
     		if (!p.isConfirmed())
     			players.remove(p);
+    }
+    
+    public void roundInformation(int rCounter){
+    	roundCounter=rCounter;
+    	StringBuilder sb=new StringBuilder();
+    	sb.append("ROUND ")
+    	.append(rCounter)
+    	.append(" ")
+    	.append(roundTime)
+    	.append(" [");
+    	for (Player p:players){
+    		sb.append(p.getName());
+    		if (players.indexOf(p)==players.size()-1)
+    			sb.append(']');
+    		else
+    			sb.append("; ");
+    	}
+    	sendMessageToAllPlayers(sb.toString());
+    }
+    
+    public void updateInformation(){
+    	StringBuilder sb=new StringBuilder();
+    	sb.append("UPDATE ")
+    	.append("[");
+    	
+    	for(String singleHit:fireUnion){
+    		sb.append(singleHit);
+    		if (fireUnion.indexOf(singleHit)==fireUnion.size()-1)
+    			sb.append(']');
+    		else
+    			sb.append(";");
+    	}
+    	
+    	sendMessageToAllPlayers(sb.toString());
+    }
+    
+    public int getNumOfRemaining(){
+    	return numOfRemainingPl;
+    }
+    
+    public int getNumOfConfirmed() {
+		return numberOfConfirmed;
+	}
+    
+    public void incNumOfConf(){
+    	++numberOfConfirmed;
+    }
+    
+    public void updating(){
+    	for(Player player:players){
+    		if(player.numOfActiveSegs()==0){
+    			player.setLooser();
+    			player.reportMessage(CommunicationCommands.GAME_OVER);
+    			numOfRemainingPl--;
+    		}
+    	}
+    	if (numOfRemainingPl==0)
+    		sendMessageToAllPlayers(CommunicationCommands.NO_VICTORY);
+    	else if (numOfRemainingPl==1){
+    		Player winner=null;
+    		for (Player player : players) {
+				if(!player.amILooser())
+					winner=player;
+			}
+    		for (Player player : players) {
+				if(!player.amILooser())
+					player.reportMessage(CommunicationCommands.VICTORY);
+				else
+					player.reportMessage(CommunicationCommands.GAME_WON+" "+winner.getName());
+			}
+    	}
+    		
+    		
+    }
+    
+    public String getPass(){
+    	return password;
+    }
+    
+    public Player findAPlayer(String name) throws playerNotFound{
+    	for (Player playa:players){
+    		if (playa.getName().equals(name))
+    			return playa;
+    	}
+    	throw new playerNotFound();
     }
     
     public static void main(String []args)

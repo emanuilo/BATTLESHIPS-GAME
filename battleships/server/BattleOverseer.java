@@ -31,10 +31,21 @@ public class BattleOverseer extends Thread {
 					sleep(1000);
 				}
 				
+				int roundCounter=0;
 				while(true){
 					myGame.changeState(round);
-					sleep(60000);
+					myGame.roundInformation(++roundCounter);
+					for (int i=myGame.getRoundTime()/1000;i>=0;i--){
+						remainingTime=i;
+						sleep(1000);
+					}
 					myGame.changeState(update);
+					myGame.updateInformation();
+					sleep(3000);
+					if(myGame.getNumOfRemaining()<=1){
+						this.interrupt();
+						break;
+					}
 				}
 			}
 		}catch(InterruptedException e){}
