@@ -21,7 +21,6 @@ public class BattleOverseer extends Thread {
 		
 		try{
 			while(!isInterrupted()){
-				System.out.println("usao u overseer");
 				myGame.changeState(deploy);
 			
 				sleep(500);

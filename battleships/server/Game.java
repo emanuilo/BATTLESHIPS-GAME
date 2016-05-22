@@ -35,7 +35,7 @@ public class Game
     private ArrayList<Integer> shipsAndSizes=new ArrayList<>();
     private int deployTime=30000;
     private int roundTime=50000;
-    private int maxNumOfPlayers=2;
+    private int maxNumOfPlayers=3;
     private int numberOfConfirmed;
     private int numOfRemainingPl;
     private int roundCounter;
@@ -240,11 +240,13 @@ public class Game
     	.append(roundTime)
     	.append(" [");
     	for (Player p:players){
-    		sb.append(p.getName());
-    		if (players.indexOf(p)==players.size()-1)
-    			sb.append(']');
-    		else
-    			sb.append("; ");
+    		if(!p.amILooser()){
+    			sb.append(p.getName());
+    			if (players.indexOf(p)==players.size()-1)
+    				sb.append(']');
+    			else
+    				sb.append("; ");
+    		}
     	}
     	sendMessageToAllPlayers(sb.toString());
     }
@@ -262,7 +264,34 @@ public class Game
     			sb.append(";");
     	}
     	if (fireUnion.size()==0) sb.append(']');
+    	fireUnion.clear();
+    	
     	sendMessageToAllPlayers(sb.toString());
+    }
+    
+    public void updating(){
+    	for(Player player:players){
+    		if(player.numOfActiveSegs()==0 && !player.amILooser()){
+    			player.setLooser();
+    			player.reportMessage(CommunicationCommands.GAME_OVER);
+    			numOfRemainingPl--;
+    		}
+    	}
+    	if (numOfRemainingPl==0)
+    		sendMessageToAllPlayers(CommunicationCommands.NO_VICTORY);
+    	else if (numOfRemainingPl==1){
+    		Player winner=null;
+    		for (Player player : players) {
+    			if(!player.amILooser())
+    				winner=player;
+    		}
+    		for (Player player : players) {
+    			if(!player.amILooser())
+    				player.reportMessage(CommunicationCommands.VICTORY);
+    			else
+    				player.reportMessage(CommunicationCommands.GAME_WON+" "+winner.getName());
+    		}
+    	}
     }
     
     public int getNumOfRemaining(){
@@ -275,31 +304,6 @@ public class Game
     
     public void incNumOfConf(){
     	++numberOfConfirmed;
-    }
-    
-    public void updating(){
-    	for(Player player:players){
-    		if(player.numOfActiveSegs()==0){
-    			player.setLooser();
-    			player.reportMessage(CommunicationCommands.GAME_OVER);
-    			numOfRemainingPl--;
-    		}
-    	}
-    	if (numOfRemainingPl==0)
-    		sendMessageToAllPlayers(CommunicationCommands.NO_VICTORY);
-    	else if (numOfRemainingPl==1){
-    		Player winner=null;
-    		for (Player player : players) {
-				if(!player.amILooser())
-					winner=player;
-			}
-    		for (Player player : players) {
-				if(!player.amILooser())
-					player.reportMessage(CommunicationCommands.VICTORY);
-				else
-					player.reportMessage(CommunicationCommands.GAME_WON+" "+winner.getName());
-			}
-    	}
     }
     
     public String getPass(){
