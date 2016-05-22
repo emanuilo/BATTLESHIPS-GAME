@@ -21,8 +21,8 @@ public class WaitingForConfState extends State {
 			.append(myGame.getMaxNumOfPl());
 			return sb.toString();
 		}
-		else if (parts[0].equals(CommunicationCommands.LAYOUT_MESSAGE))
-			return new DeployState(myGame).behavior(s, player);
+		//else if (parts[0].equals(CommunicationCommands.LAYOUT_MESSAGE))
+			//return new DeployState(myGame).behavior(s, player);
 		return null;
 	}
 

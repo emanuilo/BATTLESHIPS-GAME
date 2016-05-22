@@ -74,8 +74,9 @@ public class DeployState extends State {
 					}catch(failed_ship_placement | ship_not_init error){return null;}
 				}
 			}
+			if (correctLayout==false) return null;
 		}
-		if (correctLayout==true) return table;
-		else return null;
+		return table;
+		
 	}
 }

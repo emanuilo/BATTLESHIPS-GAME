@@ -15,8 +15,8 @@ public class RoundState extends State {
 	public String behavior(String str, Player player){
 		String []parts=str.trim().split(" ");
 		if (parts[0].equals(CommunicationCommands.STATE_REQUEST)){
-			System.out.println("R "+myGame.getRoundCounter()+(myGame.getRoundTime()-myGame.getElapsedTime())/1000);
-			return "R "+myGame.getRoundCounter()+(myGame.getRoundTime()-myGame.getElapsedTime())/1000;
+			System.out.println("R "+myGame.getRoundCounter()+" "+(myGame.getRoundTime()-myGame.getElapsedTime())/1000);
+			return "R "+myGame.getRoundCounter()+" "+(myGame.getRoundTime()-myGame.getElapsedTime())/1000;
 		}
 		else if (parts[0].equals(CommunicationCommands.LAYOUT_MESSAGE))
 				return CommunicationCommands.LAYOUT_REJECTED;
@@ -24,19 +24,19 @@ public class RoundState extends State {
 			return "ERROR "+str;
 		
 		String []playersAndCoors=parts[2].split(";");
-		playersAndCoors[0]=playersAndCoors[0].replaceAll("[","");
+		playersAndCoors[0]=playersAndCoors[0].replaceAll("\\[","");
 		playersAndCoors[playersAndCoors.length-1]=playersAndCoors[playersAndCoors.length-1].replaceAll("]","");
-		if (playersAndCoors.length!=player.numOfActiveSegs())
+		if (playersAndCoors.length>player.numOfActiveSegs())
 			return CommunicationCommands.FIRE_REJECTED;
 		
 		for (String st:playersAndCoors){
-			String coordinate=st.substring(st.length()-4, st.length()-1);
-			String playerName=st.substring(1,st.length()-6);
+			String coordinate=st.substring(st.length()-4, st.length());
+			String playerName=st.substring(1,st.length()-5);
 			
 			int x=myGame.getTableSize()/100;
 			int y=myGame.getTableSize()%100;
 			Coordinate objectCoor=Coordinate.create(coordinate);
-			if (x>objectCoor.getr() || x<0 || y>objectCoor.getc() || y<0) //koordinata van opsega
+			if (x<objectCoor.getr() || objectCoor.getr()<0 || y<objectCoor.getc() || objectCoor.getc()<0) //koordinata van opsega
 				return CommunicationCommands.FIRE_REJECTED;
 			
 			try{

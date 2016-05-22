@@ -54,6 +54,7 @@ public class BattleOverseer extends Thread {
 	}
 	
 	public long getElapsedTime(){
-		return System.currentTimeMillis()-startTime;
+		if (startTime!=0) return System.currentTimeMillis()-startTime;
+		else return 0;
 	}
 }

@@ -101,6 +101,7 @@ public class Player implements Runnable
     {
         try 
         {
+        	System.out.println(message);
             playerProxy.send(message);
         } 
         catch (IOException ex) 
