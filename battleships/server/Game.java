@@ -72,6 +72,7 @@ public class Game
     }
     
     public void deleteAPlayer(Player playa) {
+    	numOfRemainingPl--;
 		players.remove(playa);
 	}
     
@@ -83,6 +84,10 @@ public class Game
 
     public void stopTheGame(){
     	battleOverseer.interrupt();
+    	gameServer.getServerThread().interrupt();
+    	for (Player pl : players) {
+			pl.getPlayerThread().interrupt();
+		}
     }
     
     public void sendMessageToAllPlayers(String message)
@@ -256,7 +261,7 @@ public class Game
     		else
     			sb.append(";");
     	}
-    	
+    	if (fireUnion.size()==0) sb.append(']');
     	sendMessageToAllPlayers(sb.toString());
     }
     
@@ -318,7 +323,7 @@ public class Game
         try 
         {
             Game game=Game.instance();
-            System.out.println("kod pre while sam");
+            
             while(true){
             	try {
 					Thread.sleep(200);
@@ -326,14 +331,13 @@ public class Game
             	if (game.players.size()==game.getMaxNumOfPl())
             		break;
             }
-            System.out.println("pre start game");
+            
             game.startTheGame();
-            System.out.println("posle start game");
-            try {
-				Thread.sleep(4000);
-			} catch (InterruptedException e1) {}
-            try {
+            
+             try {
+            	
 				game.battleOverseer.join();
+				game.stopTheGame();
 			} catch (InterruptedException e) {}
             
         }

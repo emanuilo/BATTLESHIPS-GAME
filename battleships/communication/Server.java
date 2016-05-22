@@ -29,7 +29,9 @@ public class Server extends SocketCommunicator implements Runnable
         game = _game;
         serverThread.start();
     }
-    
+    public Thread getServerThread(){
+    	return serverThread;
+    }
     @Override
     public void run()
     {

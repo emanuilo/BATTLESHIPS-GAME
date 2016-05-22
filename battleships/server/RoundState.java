@@ -26,7 +26,7 @@ public class RoundState extends State {
 		String []playersAndCoors=parts[2].split(";");
 		playersAndCoors[0]=playersAndCoors[0].replaceAll("\\[","");
 		playersAndCoors[playersAndCoors.length-1]=playersAndCoors[playersAndCoors.length-1].replaceAll("]","");
-		if (playersAndCoors.length>player.numOfActiveSegs())
+		if (playersAndCoors.length>player.numOfActiveSegs() || playersAndCoors[0].equals(""))
 			return CommunicationCommands.FIRE_REJECTED;
 		
 		for (String st:playersAndCoors){
@@ -43,21 +43,19 @@ public class RoundState extends State {
 				Player victim=myGame.findAPlayer(playerName);
 				if(victim.fire(objectCoor)==true){ //fire accepted - hit
 					String fireOutcome="{"+playerName+"}"+coordinate+"H";
-					myGame.fireUnion.add(fireOutcome);
-					return CommunicationCommands.FIRE_ACCEPTED;
+					myGame.fireUnion.add(fireOutcome);    //FIRE ACCEPTED
 				}
 				
 			}catch(failed_ship_get_coord | ship_not_init err){ //fire accepted ali je miss
 				String fireOutcome="{"+playerName+"}"+coordinate+"M";
-				myGame.fireUnion.add(fireOutcome);
-				return CommunicationCommands.FIRE_ACCEPTED;
+				myGame.fireUnion.add(fireOutcome);  //FIRE ACCEPTED
 			}catch (playerNotFound e) {
 				return CommunicationCommands.FIRE_REJECTED;
 			}
 			
 		}
+		return CommunicationCommands.FIRE_ACCEPTED;
 		
-		return null;
 
 	}
 }

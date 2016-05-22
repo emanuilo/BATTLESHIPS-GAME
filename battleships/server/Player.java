@@ -38,6 +38,10 @@ public class Player implements Runnable
         playerThread.start();
     }
     
+    public Thread getPlayerThread(){
+    	return playerThread;
+    }
+    
     public void run()
     {
         try
@@ -45,8 +49,10 @@ public class Player implements Runnable
             while( ! Thread.interrupted() )
             {
                 String msg = playerProxy.receive();
-                if(msg.equals(CommunicationCommands.QUIT_MESSAGE))
+                if(msg.equals(CommunicationCommands.QUIT_MESSAGE)){
                 	deleteYourself();
+                	return;
+                }
                 String returnMessage=myGame.getState().behavior(msg, this);
                 if (returnMessage!=null) reportMessage(returnMessage);
                 

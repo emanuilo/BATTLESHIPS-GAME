@@ -20,7 +20,7 @@ public class BattleOverseer extends Thread {
 	public void run() {
 		
 		try{
-			while(!interrupted()){
+			while(!isInterrupted()){
 				System.out.println("usao u overseer");
 				myGame.changeState(deploy);
 			
@@ -36,7 +36,7 @@ public class BattleOverseer extends Thread {
 				sleep(myGame.getDeployTime());
 				
 				int roundCounter=0;
-				while(!interrupted()){
+				while(!isInterrupted()){
 					myGame.changeState(round);
 					myGame.roundInformation(++roundCounter);
 					startTime=System.currentTimeMillis();
@@ -44,6 +44,7 @@ public class BattleOverseer extends Thread {
 					
 					myGame.changeState(update);
 					myGame.updateInformation();
+					myGame.updating();
 					sleep(3000);
 					if(myGame.getNumOfRemaining()<=1)
 						this.interrupt();
