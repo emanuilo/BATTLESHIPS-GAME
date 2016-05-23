@@ -31,11 +31,11 @@ public class Game
     private Server gameServer;
     
     private String password;
-    private int tableSize=1010;
+    private int tableSize;
     private ArrayList<Integer> shipsAndSizes=new ArrayList<>();
-    private int deployTime=30000;
-    private int roundTime=50000;
-    private int maxNumOfPlayers=3;
+    private int deployTime;
+    private int roundTime;
+    private int maxNumOfPlayers;
     private int numberOfConfirmed;
     private int numOfRemainingPl;
     private int roundCounter;
@@ -46,15 +46,15 @@ public class Game
     
     private Game() throws SocketException 
     {
-         //addTableSize();
+         addTableSize();
          addShipsSizes();
-         /*addDeployTime();
+         addDeployTime();
          addRoundTime();
-         addNumberOfPlayers();*/
+         addNumberOfPlayers();
+         addPassword();
          state=new WaitingForConfState(this);
          battleOverseer=new BattleOverseer(this);
          gameServer = new Server(this);
-         //start overseer
     }
     
     public static Game instance() throws SocketException
@@ -97,20 +97,19 @@ public class Game
     }
     
     public void addPassword(){
-    	System.out.println("Password:");
-    	if (password!=null){
-    		System.out.println("Password already exists!");
-    		/*System.out.println("Current password:");
-    		Scanner in=new Scanner(System.in);
-    		String oldPass=in.nextLine();
-    		if (oldPass!=password){
-    			System.out.println("Wrong password!");
-    			return;
-    		}*/
-    	}
+    	System.out.println("Do you want to add a password? <1/0>");
     	Scanner in=new Scanner(System.in);
-    	String pass=in.nextLine();
-    	password=pass;
+    	int choice=in.nextInt();    	
+    	if(choice==1){
+    		System.out.println("Password:");
+    		if (password!=null){
+    			System.out.println("Password already exists!");
+    		}
+    		Scanner in2=new Scanner(System.in);
+    		String pass=in2.nextLine();
+    		password=pass;
+    	}
+    		
     }
     
     public int getRoundCounter() {
@@ -124,7 +123,9 @@ public class Game
     public void addTableSize(){
     	System.out.println("Table size: <xxyy>");
     	Scanner in=new Scanner(System.in);
-    	tableSize=in.nextInt();
+    	String size=in.nextLine();
+    	tableSize=Integer.parseInt(size);
+    	
     }
     
     public int getTableSize(){
@@ -132,10 +133,10 @@ public class Game
     }
     
     public void addShipsSizes(){
-    	System.out.println("Number and size of ships: (<size> <number>)");
+    	System.out.println("Number and size of ships: (<size> <number>) - 0 for confirm");
     	Scanner in=new Scanner(System.in);
     	
-    	shipsAndSizes.add(4);
+    	/*shipsAndSizes.add(4);
     	shipsAndSizes.add(1);
     	
     	shipsAndSizes.add(3);
@@ -145,27 +146,27 @@ public class Game
     	shipsAndSizes.add(3);
     	
     	shipsAndSizes.add(1);
-    	shipsAndSizes.add(3);
-    	/*while(true){
+    	shipsAndSizes.add(3);*/
+    	while(true){
     		Integer size=new Integer(in.nextInt());
     		if (size.intValue()==0) break;
     		shipsAndSizes.add(size);
     		
     		Integer number=new Integer(in.nextInt());
     		shipsAndSizes.add(number);
-    	}*/
+    	}
     }
     
     public void addDeployTime(){
     	System.out.println("Deploy time: ");
     	Scanner in=new Scanner(System.in);
-    	deployTime=in.nextInt();    	
+    	deployTime=in.nextInt()*1000;    	
     }
     
     public void addRoundTime(){
     	System.out.println("Round time: ");
     	Scanner in=new Scanner(System.in);
-    	roundTime=in.nextInt();  
+    	roundTime=in.nextInt()*1000;  
     }
     
     public void addNumberOfPlayers(){

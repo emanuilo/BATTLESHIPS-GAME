@@ -65,7 +65,7 @@ public class Server extends SocketCommunicator implements Runnable
     		PlayerProxy pp = new PlayerProxy(this, receivePacket.getAddress(), receivePacket.getPort());
     		if (pass!=null && parts.length!=3)
     			pp.send(CommunicationCommands.PASSWORD_REQUIRED);
-    		else if (pass==null || pass.equals(parts[2].substring(1, parts[2].length()-1))){
+    		else if (pass==null || pass.equals(parts[2].substring(1, parts[2].length()))){
     			if(usedNames.get(parts[1])!=null){
     				pp.send(CommunicationCommands.DUPLICATE_NAME);
     				return;
