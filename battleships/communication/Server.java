@@ -18,7 +18,8 @@ import java.util.Hashtable;
 public class Server extends SocketCommunicator implements Runnable
 {
     private final Hashtable<Integer, PlayerProxy> connectedPlayers = new Hashtable<>();
-    private final Hashtable<String, String> usedNames=new Hashtable<>();
+    private final Hashtable<String, Integer> usedNames=new Hashtable<>();
+    private final Hashtable<Integer, String> nameGetter=new Hashtable<>();
     private final Thread serverThread = new Thread(this);
     private int clientID;
     private final Game game;
@@ -66,12 +67,14 @@ public class Server extends SocketCommunicator implements Runnable
     		if (pass!=null && parts.length!=3)
     			pp.send(CommunicationCommands.PASSWORD_REQUIRED);
     		else if (pass==null || pass.equals(parts[2].substring(1, parts[2].length()))){
-    			if(usedNames.get(parts[1])!=null){
+    			if(usedNames.get(parts[1])!= null){
     				pp.send(CommunicationCommands.DUPLICATE_NAME);
     				return;
     			}
     			clientID++;
     			connectedPlayers.put(clientID, pp);
+    			usedNames.put(parts[1], clientID);
+    			nameGetter.put(clientID, parts[1]);
     			game.newPlayer(pp, parts[1]);
     			pp.send(CommunicationCommands.WELCOME_MESSAGE + " " + clientID );
     			System.out.println("Added new player: " + parts[1]);
@@ -85,6 +88,8 @@ public class Server extends SocketCommunicator implements Runnable
     		PlayerProxy pp=connectedPlayers.get(id);
     		if (pp==null) throw new idNotFound();
     		connectedPlayers.remove(pp);
+    		usedNames.remove(nameGetter.get(id));
+    		nameGetter.remove(id);
     		pp.receivedMessage(parts[0]);
         	
     		System.out.println("Server received: " + message);
