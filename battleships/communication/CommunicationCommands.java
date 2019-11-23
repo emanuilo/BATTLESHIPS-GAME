@@ -30,4 +30,5 @@ public class CommunicationCommands
     public static final String ACCESS_DENIED="ACCESS_DENIED";
     public static final String PASSWORD_REQUIRED="PASSWORD_REQUIRED";
     public static final String DUPLICATE_NAME="DUPLICATE_NAME";
+    public static final String IMAGE_MESSAGE="IMAGE";
 }

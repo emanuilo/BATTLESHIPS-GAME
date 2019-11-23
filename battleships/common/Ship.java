@@ -26,6 +26,7 @@ public class Ship {
 	public int getSize(){
 		return parts.length;
 	}
+	
 	public String toString(){
 		if (!init) return "";
 		StringBuilder str= new StringBuilder();

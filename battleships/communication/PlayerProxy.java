@@ -49,4 +49,8 @@ public class PlayerProxy
         receivedMessage = null;
         return retMessage;
     }
+    
+    public String getAddress(){
+    	return clientAddress.getHostAddress();
+    }
 }

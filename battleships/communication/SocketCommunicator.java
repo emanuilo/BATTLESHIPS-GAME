@@ -11,6 +11,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
+
 /**
  *
  * @author POOP
@@ -18,7 +20,7 @@ import java.net.SocketException;
 public abstract class SocketCommunicator 
 {
     protected static int SERVER_PORT = 4000;
-    protected static int RCV_BUFFER_LEN = 1024;
+    protected static int RCV_BUFFER_LEN = 50000;
     protected DatagramSocket datagramSocket;
     protected byte []receiveBuffer = new byte[RCV_BUFFER_LEN];
     protected DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
@@ -47,5 +49,9 @@ public abstract class SocketCommunicator
     {
         datagramSocket.receive(receivePacket);
         return new String(receivePacket.getData(), 0, receivePacket.getLength());
+    }
+    
+    public static void setPort(int port){
+    	SERVER_PORT=port;
     }
 }

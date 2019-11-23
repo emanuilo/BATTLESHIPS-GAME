@@ -5,21 +5,26 @@
  */
 package battleships.server;
 
+import battleships.ErrorsServer.ENumOfPlayers;
+import battleships.ErrorsServer.ETableSize;
 import battleships.ErrorsServer.playerNotFound;
 import battleships.common.Table;
 import battleships.communication.CommunicationCommands;
 import battleships.communication.PlayerProxy;
 import battleships.communication.Server;
+import battleships.communication.SocketCommunicator;
+
 import java.net.SocketException;
 import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JTable;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 import java.util.Scanner;
-
+import battleships.GUI.*;
 /**
  *
  * @author POOP
@@ -27,7 +32,7 @@ import java.util.Scanner;
 public class Game 
 {
     private static Game instance;
-    ArrayList<Player> players = new ArrayList<>();
+    public ArrayList<Player> players = new ArrayList<>();
     private Server gameServer;
     
     private String password;
@@ -44,42 +49,81 @@ public class Game
     private State state;
     ArrayList<String> fireUnion=new ArrayList<>();
     
-    private Game() throws SocketException 
-    {
+    private static SecondWindow secondWindow;
+    private static FirstWindow firstWindow;
+    
+    private boolean readyForDeploy;
+    
+    private Game() throws SocketException{
+    	 setPort();
          addTableSize();
          addShipsSizes();
          addDeployTime();
          addRoundTime();
          addNumberOfPlayers();
          addPassword();
+         
          state=new WaitingForConfState(this);
          battleOverseer=new BattleOverseer(this);
          gameServer = new Server(this);
     }
     
-    public static Game instance() throws SocketException
-    {
+    private void setPort() {
+    	int b=firstWindow.getPort();
+		SocketCommunicator.setPort(b);
+	}
+
+    public void setReadyForDeploy(){
+    	readyForDeploy=true;
+    }
+    
+	public static Game instance() throws SocketException{
         if( instance == null )
             instance = new Game();
         return instance;
     }
     
-    public void newPlayer(PlayerProxy pp, String name)
-    {
+    public void newPlayer(PlayerProxy pp, String name){
+    	if(players.size()==maxNumOfPlayers)
+    		return;
         Player p = new Player(pp, name, this);
         players.add(p);
+        
+        JTable table=secondWindow.getPlayersTable();
+        table.setValueAt(numOfRemainingPl+1+".", numOfRemainingPl, 0);
+        table.setValueAt(p.getName(), numOfRemainingPl, 1);
+        table.setValueAt(p.getAddress(), numOfRemainingPl, 2);
+        secondWindow.setNumOfConn(players.size()+"/"+maxNumOfPlayers);
+        
         numOfRemainingPl++;
+        if(players.size()==maxNumOfPlayers)
+        	secondWindow.allPlayersConnected();
+        secondWindow.setComboContent();
     }
     
-    public void deleteAPlayer(Player playa) {
+    public void deleteAPlayer(Player playa){
     	numOfRemainingPl--;
 		players.remove(playa);
+		if(ThirdWindow.getInstance()==null) updateTable();
 	}
+    
+    public void updateTable(){
+    	JTable table=secondWindow.getPlayersTable();
+    	for(int i=0; i<players.size();i++){
+    		table.setValueAt(i+1+".", i, 0);
+            table.setValueAt(players.get(i).getName(), i, 1);
+            table.setValueAt(players.get(i).getAddress(), i, 2);
+            secondWindow.setNumOfConn(players.size()+"/"+maxNumOfPlayers);
+    	}
+    	for(int i=players.size();i<maxNumOfPlayers;i++){
+    		table.setValueAt("", i, 0);
+            table.setValueAt("", i, 1);
+            table.setValueAt("", i, 2);
+    	}
+    }
     
     public void startTheGame(){
     	battleOverseer.start();
-    	int b; 
-    	b=5;
     }
 
     public void stopTheGame(){
@@ -90,26 +134,13 @@ public class Game
 		}
     }
     
-    public void sendMessageToAllPlayers(String message)
-    {
+    public void sendMessageToAllPlayers(String message){
         for(Player p : players)
             p.reportMessage(message);
     }
     
     public void addPassword(){
-    	System.out.println("Do you want to add a password? <1/0>");
-    	Scanner in=new Scanner(System.in);
-    	int choice=in.nextInt();    	
-    	if(choice==1){
-    		System.out.println("Password:");
-    		if (password!=null){
-    			System.out.println("Password already exists!");
-    		}
-    		Scanner in2=new Scanner(System.in);
-    		String pass=in2.nextLine();
-    		password=pass;
-    	}
-    		
+    	password=firstWindow.getPass();
     }
     
     public int getRoundCounter() {
@@ -120,12 +151,16 @@ public class Game
     	return battleOverseer.getElapsedTime();
     }
     
+    public long getRemainingTime(){
+    	if(state instanceof DeployState){
+    		return (deployTime-getElapsedTime())/1000;
+    	}
+    	else
+    		return (roundTime-getElapsedTime())/1000;
+    }
+    
     public void addTableSize(){
-    	System.out.println("Table size: <xxyy>");
-    	Scanner in=new Scanner(System.in);
-    	String size=in.nextLine();
-    	tableSize=Integer.parseInt(size);
-    	
+    	tableSize=firstWindow.getTableSize();
     }
     
     public int getTableSize(){
@@ -133,48 +168,23 @@ public class Game
     }
     
     public void addShipsSizes(){
-    	System.out.println("Number and size of ships: (<size> <number>) - 0 for confirm");
-    	Scanner in=new Scanner(System.in);
-    	
-    	/*shipsAndSizes.add(4);
-    	shipsAndSizes.add(1);
-    	
-    	shipsAndSizes.add(3);
-    	shipsAndSizes.add(2);
-    	
-    	shipsAndSizes.add(2);
-    	shipsAndSizes.add(3);
-    	
-    	shipsAndSizes.add(1);
-    	shipsAndSizes.add(3);*/
-    	while(true){
-    		Integer size=new Integer(in.nextInt());
-    		if (size.intValue()==0) break;
-    		shipsAndSizes.add(size);
-    		
-    		Integer number=new Integer(in.nextInt());
-    		shipsAndSizes.add(number);
+    	String[] temp=secondWindow.getShips();
+    	for(int i=0;i<temp.length;i++){
+    		shipsAndSizes.add(i+1);
+    		shipsAndSizes.add(Integer.parseInt(temp[i]));
     	}
     }
     
     public void addDeployTime(){
-    	System.out.println("Deploy time: ");
-    	Scanner in=new Scanner(System.in);
-    	deployTime=in.nextInt()*1000;    	
+    	deployTime=firstWindow.getDeploy()*1000;
     }
     
     public void addRoundTime(){
-    	System.out.println("Round time: ");
-    	Scanner in=new Scanner(System.in);
-    	roundTime=in.nextInt()*1000;  
+    	roundTime=firstWindow.getRound()*1000;
     }
     
     public void addNumberOfPlayers(){
-    	System.out.println("Maximum number of players: ");
-    	Scanner in=new Scanner(System.in);
-    	int num=in.nextInt();  
-    	if (num<2) System.out.println("Minimum number of players is 2!");
-    	else maxNumOfPlayers=num;
+    	maxNumOfPlayers=firstWindow.getNumOfPl();
     }
     
     public void changeState(State st){
@@ -274,6 +284,7 @@ public class Game
     	for(Player player:players){
     		if(player.numOfActiveSegs()==0 && !player.amILooser()){
     			player.setLooser();
+    			player.disableTheTable();
     			player.reportMessage(CommunicationCommands.GAME_OVER);
     			numOfRemainingPl--;
     		}
@@ -287,8 +298,12 @@ public class Game
     				winner=player;
     		}
     		for (Player player : players) {
-    			if(!player.amILooser())
+    			if(!player.amILooser()){
     				player.reportMessage(CommunicationCommands.VICTORY);
+    				ThirdWindow thirdWindow=ThirdWindow.getInstance();
+    				thirdWindow.setVisible(false);
+    				FourthWindow.entry(player.getName());
+    			}
     			else
     				player.reportMessage(CommunicationCommands.GAME_WON+" "+winner.getName());
     		}
@@ -327,19 +342,27 @@ public class Game
     {
         try 
         {
+        	FirstWindow.entry();
+        	
+        	secondWindow=SecondWindow.getInstance();
+        	while(secondWindow==null || !secondWindow.isDone()){
+            	try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {}
+            	secondWindow=SecondWindow.getInstance();
+            }
+        	firstWindow=FirstWindow.getInstance();
             Game game=Game.instance();
             
-            while(true){
+            while(game.players.size()!=game.getMaxNumOfPl() || !game.readyForDeploy ){
             	try {
-					Thread.sleep(200);
+					Thread.sleep(20);
 				} catch (InterruptedException e) {}
-            	if (game.players.size()==game.getMaxNumOfPl())
-            		break;
             }
             
             game.startTheGame();
             
-             try {
+            try {
             	
 				game.battleOverseer.join();
 				game.stopTheGame();
@@ -350,5 +373,6 @@ public class Game
         {
             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
 }

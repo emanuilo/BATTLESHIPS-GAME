@@ -1,5 +1,7 @@
 package battleships.server;
 
+import battleships.GUI.ThirdWindow;
+
 public class BattleOverseer extends Thread {
 	private Game myGame;
 	private int remainingTime;
@@ -7,6 +9,7 @@ public class BattleOverseer extends Thread {
 	private DeployState deploy;
 	private RoundState round;
 	private UpdateState update;
+	private SetupState setup;
 	
 	private long startTime, estimatedTime;
 	
@@ -15,12 +18,16 @@ public class BattleOverseer extends Thread {
 		deploy=new DeployState(myGame);
 		round=new RoundState(myGame);
 		update=new UpdateState(myGame);
+		setup=new SetupState(myGame);
 	}
 	@Override
 	public void run() {
 		
 		try{
 			while(!isInterrupted()){
+				myGame.changeState(setup);
+				setup.behavior(null, null);
+				
 				myGame.changeState(deploy);
 			
 				sleep(500);
@@ -31,7 +38,10 @@ public class BattleOverseer extends Thread {
 				myGame.resendDeployShipsInformation();
 				myGame.deleteNotConfirmedPl();
 				
+				sleep(20);
+				ThirdWindow thirdWindow=ThirdWindow.getInstance();
 				startTime=System.currentTimeMillis();
+				thirdWindow._start();
 				sleep(myGame.getDeployTime());
 				
 				int roundCounter=0;
@@ -39,6 +49,7 @@ public class BattleOverseer extends Thread {
 					myGame.changeState(round);
 					myGame.roundInformation(++roundCounter);
 					startTime=System.currentTimeMillis();
+					thirdWindow.wakeUp(roundCounter);
 					sleep(myGame.getRoundTime());
 					
 					myGame.changeState(update);

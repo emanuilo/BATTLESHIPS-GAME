@@ -7,12 +7,16 @@ package battleships.server;
 
 import battleships.Errors.failed_ship_get_coord;
 import battleships.Errors.ship_not_init;
+import battleships.GUI.SecondWindow;
+import battleships.GUI.ThirdWindow;
 import battleships.common.Coordinate;
 import battleships.common.Ship;
 import battleships.common.Table;
 import battleships.communication.CommunicationCommands;
 import battleships.communication.PlayerProxy;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +33,7 @@ public class Player implements Runnable
     private Game  myGame;
     private boolean confirmed=false;
     private boolean looser=false;
+    private int lastRoundActiveSegs;
     
     public Player(PlayerProxy _playerProxy, String _name, Game game)
     {
@@ -40,6 +45,14 @@ public class Player implements Runnable
     
     public Thread getPlayerThread(){
     	return playerThread;
+    }
+    
+    public void setLastRoundActiveSegs(int num){
+    	lastRoundActiveSegs=num;
+    }
+    
+    public int getLastRoundActiveSegs(){
+    	return lastRoundActiveSegs;
     }
     
     public void run()
@@ -58,6 +71,10 @@ public class Player implements Runnable
                 
             }
         } catch(InterruptedException e) { }
+    }
+    
+    public String getAddress(){
+    	return playerProxy.getAddress();
     }
     
     public void deleteYourself() {
@@ -80,6 +97,21 @@ public class Player implements Runnable
     		return true;
     	}
     	return false;
+    }
+    
+    public void draw(ArrayList<Coordinate> listOfCoors){
+    	ThirdWindow thirdWindow=ThirdWindow.getInstance();
+    	thirdWindow.setShips(listOfCoors, name, table.activecount());
+    }
+    
+    public void drawHitsAndMisses(ArrayList<Coordinate> hits, ArrayList<Coordinate> misses){
+    	ThirdWindow thirdWindow=ThirdWindow.getInstance();
+    	thirdWindow.drawHitsAndMisses(hits, misses, name, table.activecount());
+    }
+    
+    public void disableTheTable(){
+    	ThirdWindow thirdWindow=ThirdWindow.getInstance();
+    	thirdWindow.disableTheTable(name);
     }
     
     public String getName(){
@@ -108,6 +140,8 @@ public class Player implements Runnable
         try 
         {
         	System.out.println(message);
+        	SecondWindow.getInstance().addConsoleText("SENT: "+message, 1);
+        	if(ThirdWindow.getInstance()!=null) ThirdWindow.getInstance().addConsoleText("SENT: "+message, 1);
             playerProxy.send(message);
         } 
         catch (IOException ex) 

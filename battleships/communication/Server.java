@@ -6,6 +6,9 @@
 package battleships.communication;
 
 import battleships.ErrorsServer.idNotFound;
+import battleships.GUI.FirstWindow;
+import battleships.GUI.SecondWindow;
+import battleships.GUI.ThirdWindow;
 import battleships.server.Game;
 import java.io.IOException;
 import java.net.SocketException;
@@ -37,6 +40,7 @@ public class Server extends SocketCommunicator implements Runnable
     public void run()
     {
         System.out.println("Game server started, listening on port " + SERVER_PORT + " ...");
+        SecondWindow.getInstance().addConsoleText("Game server started, listening on port " + SERVER_PORT + " ...", 0);
         while( ! Thread.interrupted() )
         {
             try
@@ -52,15 +56,20 @@ public class Server extends SocketCommunicator implements Runnable
             catch(IOException e) {  }
         }
         System.out.println("... game server ended.");
+        SecondWindow.getInstance().addConsoleText("... game server ended.", 0);
+        if(ThirdWindow.getInstance()!=null) ThirdWindow.getInstance().addConsoleText("... game server ended.", 0);
     }
     
     private void processMessage(String message) throws IOException, idNotFound
     {
+    	System.out.println(message);
+    	SecondWindow.getInstance().addConsoleText("RECEIVED: "+message, 0);
+    	if(ThirdWindow.getInstance()!=null) ThirdWindow.getInstance().addConsoleText("RECEIVED: "+message, 0);
     	String []parts = message.trim().split(" ");
     	if( parts[0].equals( CommunicationCommands.JOIN_MESSAGE ) )
     		// ako je serveru stigla poruka JOIN
     	{	
-    		System.out.println(message);
+    		
     		
     		String pass=game.getPass();
     		PlayerProxy pp = new PlayerProxy(this, receivePacket.getAddress(), receivePacket.getPort());
@@ -92,7 +101,7 @@ public class Server extends SocketCommunicator implements Runnable
     		nameGetter.remove(id);
     		pp.receivedMessage(parts[0]);
         	
-    		System.out.println("Server received: " + message);
+    		//System.out.println("Server received: " + message);
         }
         else if (game.getState()!=null){
         	System.out.println(message);

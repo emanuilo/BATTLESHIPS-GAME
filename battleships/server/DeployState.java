@@ -11,7 +11,8 @@ import battleships.common.Table;
 import battleships.communication.CommunicationCommands;
 
 public class DeployState extends State {
-	
+	private int ID;
+	public ArrayList<Coordinate> listOfCoors;
 	public DeployState(Game game){
 		super(game);
 	}
@@ -32,6 +33,8 @@ public class DeployState extends State {
 		Table table=making_and_placing(parts[2]);
 		if (table!=null){
 			player.setTable(table);
+			player.draw((ArrayList<Coordinate>) listOfCoors.clone());
+			player.setLastRoundActiveSegs(player.numOfActiveSegs());
 			return CommunicationCommands.LAYOUT_ACCEPTED;
 		}
 		else return CommunicationCommands.LAYOUT_REJECTED;
@@ -39,16 +42,18 @@ public class DeployState extends State {
 	}
 	
 	public Table making_and_placing(String str){
-		int x=myGame.getTableSize()/100;
-		int y=myGame.getTableSize()%100;
+		int x=myGame.getTableSize();
+		int y=x;
 		boolean correctLayout=false;
 		Table table=new Table(x,y);
+		listOfCoors=new ArrayList<>(); 
 		
 		char orientation = 0;
 		String []parts=str.trim().split(";");
 		
 		List<Ship> ships=Ship.create(myGame.getShipSizesString()); //pravljenje brodova na osnovu zadatih velicina i broja
-				
+			
+		int cnt=0;
 		for(String singleShip:parts){ 					//postavljanje brodova na zadate koordinate
 			correctLayout=false;
 			String []parts2=singleShip.split("=");		
@@ -58,10 +63,17 @@ public class DeployState extends State {
 			coordinates[0]=coordinates[0].replaceAll("[^0-9]", "");
 			coordinates[coordinates.length-1]=coordinates[coordinates.length-1].replaceAll("[^0-9]", "");
 			
-			if(Integer.parseInt(coordinates[1])-Integer.parseInt(coordinates[0])==1)
-				orientation='H';
-			else if(Integer.parseInt(coordinates[1])-Integer.parseInt(coordinates[0])==100)
-				orientation='V';
+			if(coordinates.length>1){
+				if(Integer.parseInt(coordinates[1])-Integer.parseInt(coordinates[0])==1)
+					orientation='H';
+				else if(Integer.parseInt(coordinates[1])-Integer.parseInt(coordinates[0])==100)
+					orientation='V';
+			}
+			else orientation='H';
+			
+			for(int i=0;i<coordinates.length;i++){                   //ZA CRTANJE BRODOVA
+				listOfCoors.add(Coordinate.create(coordinates[i]));
+			}
 			
 			for(Ship sh:ships){
 				if(sh.getSize()==Integer.parseInt(parts2[0])){
